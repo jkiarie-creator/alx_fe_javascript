@@ -28,7 +28,9 @@ function showRandomQuote() {
     `;
 
 }
+function createAddQuoteForm(){
 
+}
 function addQuote() {
     const text = newQuoteText.value.trim();
     const category = newQuoteCategory.value.trim();
