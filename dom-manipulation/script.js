@@ -1,16 +1,43 @@
-// Array to store quote objects
-const quotes = [
+// Initialize quotes array from localStorage or use default quotes
+const defaultQuotes = [
     { text: "Life is what happens while you're busy making other plans.", category: "Life" },
     { text: "The only way to do great work is to love what you do.", category: "Work" },
     { text: "In three words I can sum up everything I've learned about life: it goes on.", category: "Life" }
 ];
+
+// Load quotes from localStorage or use default quotes
+const quotes = JSON.parse(localStorage.getItem('quotes')) || defaultQuotes;
 
 // Get DOM elements
 const newQuoteBtn = document.getElementById('new-quote');
 const quoteDisplay = document.createElement('div');
 const newQuoteText = document.getElementById('newQuoteText');
 const newQuoteCategory = document.getElementById('newQuoteCategory');
+
+// Create export button
+const exportButton = document.createElement('button');
+exportButton.textContent = 'Export Quotes';
+exportButton.id = 'export-quotes';
+exportButton.addEventListener('click', exportQuotes);
+
+// Create import functionality
+const importContainer = document.createElement('div');
+importContainer.className = 'import-container';
+
+const fileInput = document.getElementById('importFile');
+
+const importButton = document.createElement('button');
+importButton.textContent = 'Import Quotes';
+importButton.id = 'import-quotes';
+importButton.addEventListener('click', () => fileInput.click());
+
+importContainer.appendChild(importButton);
+importContainer.appendChild(fileInput);
+
+// Add elements to DOM
 document.body.appendChild(quoteDisplay);
+document.body.appendChild(exportButton);
+document.body.appendChild(importContainer);
 
 function showRandomQuote() {
     if (quotes.length === 0) {
@@ -50,10 +77,81 @@ function addQuote() {
         
         // Show success message
         alert('Quote added successfully!');
+        localStorage.setItem('quotes', JSON.stringify(quotes)); 
     } else {
         alert('Please fill in both the quote text and category!');
     }
 }
+
+// Function to export quotes to JSON file
+function exportQuotes() {
+    // Convert quotes array to JSON string with formatting
+    const quotesJson = JSON.stringify(quotes, null, 2);
+    
+    // Create blob with JSON content
+    const blob = new Blob([quotesJson], { type: 'application/json' });
+    
+    // Create URL for the blob
+    const url = URL.createObjectURL(blob);
+    
+    // Create temporary download link
+    const downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    downloadLink.download = 'my_quotes.json';
+    
+    // Append link to body, click it, and remove it
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    
+    // Clean up by revoking the blob URL
+    URL.revokeObjectURL(url);
+}
+
+// Function to handle file import
+fileInput.addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const fileReader = new FileReader();
+        
+        fileReader.onload = function(event) {
+            try {
+                // Parse the JSON content
+                const importedQuotes = JSON.parse(event.target.result);
+                
+                // Validate the imported data
+                if (Array.isArray(importedQuotes) && importedQuotes.every(quote => 
+                    typeof quote === 'object' && 
+                    typeof quote.text === 'string' && 
+                    typeof quote.category === 'string')) {
+                    
+                    // Merge imported quotes with existing ones
+                    quotes.push(...importedQuotes);
+                    
+                    // Update local storage
+                    localStorage.setItem('quotes', JSON.stringify(quotes));
+                    
+                    // Show the latest quote
+                    showRandomQuote();
+                    
+                    // Show success message
+                    alert(`Successfully imported ${importedQuotes.length} quotes!`);
+                } else {
+                    throw new Error('Invalid quote format in JSON file');
+                }
+            } catch (error) {
+                alert('Error importing quotes: ' + error.message);
+            }
+        };
+        
+        fileReader.onerror = function() {
+            alert('Error reading file');
+        };
+        
+        // Read the file as text
+        fileReader.readAsText(file);
+    }
+});
 
 // Add event listener to new quote button
 newQuoteBtn.addEventListener('click', showRandomQuote);
