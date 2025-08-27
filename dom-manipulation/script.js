@@ -15,9 +15,7 @@ const newQuoteText = document.getElementById('newQuoteText');
 const newQuoteCategory = document.getElementById('newQuoteCategory');
 
 // Create export button
-const exportButton = document.createElement('button');
-exportButton.textContent = 'Export Quotes';
-exportButton.id = 'export-quotes';
+const exportButton = document.getElementById('export-quotes');
 exportButton.addEventListener('click', exportQuotes);
 
 // Create import functionality
@@ -109,7 +107,7 @@ function exportQuotes() {
 }
 
 // Function to handle file import
-fileInput.addEventListener('change', function(event) {
+function importFromJsonFile(event) {
     const file = event.target.files[0];
     if (file) {
         const fileReader = new FileReader();
@@ -151,7 +149,8 @@ fileInput.addEventListener('change', function(event) {
         // Read the file as text
         fileReader.readAsText(file);
     }
-});
+};
+addEventListener('change', importFromJsonFile);
 
 // Add event listener to new quote button
 newQuoteBtn.addEventListener('click', showRandomQuote);
