@@ -90,7 +90,7 @@ const syncManager = {
     async synchronizeQuotes() {
         try {
             // Fetch server quotes
-            const serverQuotes = await apiService.fetchQuotes();
+            const serverQuotes = await apiService.fetchQuotesFromServer();
             if (!serverQuotes.length) return;
 
             // Get current local quotes
@@ -245,7 +245,7 @@ const syncManager = {
 
 // API Service functions
 const apiService = {
-    async fetchQuotes() {
+    async fetchQuotesFromServer() {
         try {
             const response = await fetch(`${API_BASE_URL}/posts?_limit=5`);
             if (!response.ok) throw new Error('Network response was not ok');
@@ -567,7 +567,7 @@ document.getElementById('categoryFilter').addEventListener('change', (e) => {
 
 // Function to fetch and merge new quotes
 async function fetchNewQuotes() {
-    const newQuotes = await apiService.fetchQuotes();
+    const newQuotes = await apiService.fetchQuotesFromServer();
     if (newQuotes.length > 0) {
         // Merge new quotes, avoiding duplicates
         const existingTexts = new Set(quotes.map(q => q.text));
