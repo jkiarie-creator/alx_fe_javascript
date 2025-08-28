@@ -162,7 +162,7 @@ const syncManager = {
     showSyncNotification() {
         const notification = document.createElement('div');
         notification.className = 'sync-notification';
-        notification.textContent = 'Quotes synchronized with server';
+        notification.textContent = 'Quotes synced with server!';
         document.body.appendChild(notification);
         setTimeout(() => notification.remove(), 3000);
     },
