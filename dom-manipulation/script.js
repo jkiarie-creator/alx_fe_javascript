@@ -87,7 +87,7 @@ const quotes = JSON.parse(localStorage.getItem('quotes')) || defaultQuotes;
 const syncManager = {
     lastSyncTimestamp: Date.now(),
 
-    async synchronizeQuotes() {
+    async syncQuotes() {
         try {
             // Fetch server quotes
             const serverQuotes = await apiService.fetchQuotesFromServer();
@@ -267,7 +267,7 @@ const apiService = {
 
     async postQuote(quote) {
         try {
-            const response = await fetch(`${API_BASE_URL}/posts`, {
+            const response = await fetch(`https://jsonplaceholder.typicode.com/posts`, {
                 method: 'POST',
                 body: JSON.stringify({
                     title: quote.category,
